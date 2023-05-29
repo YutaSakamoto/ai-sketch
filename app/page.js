@@ -6,6 +6,7 @@ import { FaUndo, FaTrash } from "react-icons/fa";
 
 export default function Home() {
   const [prompt, setPrompt] = useState("");
+  const [error, setError] = useState(null);
 
   const canvasRef = useRef(null);
 
@@ -16,6 +17,16 @@ export default function Home() {
   const handleClear = () => {
     canvasRef.current.clearCanvas();
   };
+
+  const handleGenerate = async() => {
+    if (prompt === "") {
+      setError("ヒントを入力してください");
+      return;
+    }
+
+    const base64 = await canvasRef.current.exportImage("png");
+    console.log(base64);
+  }
 
   return (
     <div className="max-w-3xl mx-auto my-10 px-4">
@@ -64,13 +75,22 @@ export default function Home() {
             placeholder="Enter your prompt here"
           />
 
-          <button className="rounded-r-lg py-3.5 px-4 ml-1 text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium text-sm text-center">
-            作る
+          <button 
+            onClick={handleGenerate}
+            className="rounded-r-lg py-3.5 px-4 ml-1 text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium text-sm text-center"
+          >
+            Generate
           </button>
       </section>
 
       {/* Output Image Section */}
-      <section className="w-[400px] h-[400px] flex items-center justify-center mx-auto mt-12"></section>
+      <section className="w-[400px] h-[400px] flex items-center justify-center mx-auto mt-12">
+        {error && (
+          <div className="flex justify-center">
+            <p className="text-lg text-red-500">{error}</p>
+          </div>
+        )}
+      </section>
     </div>
   );
 }
